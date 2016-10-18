@@ -66,24 +66,24 @@ static void prPipe(Pipe p)
   if ( p == NULL )
     return;
 
-  printf("Begin pipe%s\n", p->type == Pout ? "" : " Error");
+  //printf("Begin pipe%s\n", p->type == Pout ? "" : " Error");
   for ( c = p->head; c != NULL; c = c->next ) {
-    printf("  Cmd #%d: ", ++i);
+   // printf("  Cmd #%d: ", ++i);
     prCmd(c);
   }
-  printf("End pipe\n");
+ // printf("End pipe\n");
   prPipe(p->next);
 }
 
 int main(int argc, char *argv[])
 {
   Pipe p;
-  char *host = "armadillo";
+  char *host = "zirael";
 
   while ( 1 ) {
     printf("%s%% ", host);
     p = parse();
-    run_shell(p);
+    run_pipeline(p);
     prPipe(p);
     freePipe(p);
   }
