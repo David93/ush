@@ -66,12 +66,12 @@ static void prPipe(Pipe p)
   if ( p == NULL )
     return;
 
-  //printf("Begin pipe%s\n", p->type == Pout ? "" : " Error");
+  printf("Begin pipe%s\n", p->type == Pout ? "" : " Error");
   for ( c = p->head; c != NULL; c = c->next ) {
-   // printf("  Cmd #%d: ", ++i);
+    printf("  Cmd #%d: ", ++i);
     prCmd(c);
   }
- // printf("End pipe\n");
+  printf("End pipe\n");
   prPipe(p->next);
 }
 
