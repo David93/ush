@@ -1,0 +1,2 @@
+cat omh >& out
+cat out
