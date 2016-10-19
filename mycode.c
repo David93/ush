@@ -9,6 +9,7 @@
 
 #define READ_END 0
 #define WRITE_END 1
+extern char **environ;
 void run_cmd(Cmd c){
 	//if(c==NULL)
 	//	return;
@@ -30,7 +31,29 @@ void run_cmd(Cmd c){
 	if(strcmp("logout",c->args[0])==0){//exit 
 		exit(0);
 	}
- 	int pid=fork();
+	if(strcmp("setenv",c->args[0])==0){//setenv handler
+		if(c->args[1]==NULL){
+			int i = 1;
+  			char *s = *environ;
+			for (; s; i++) {
+    		printf("%s\n", s);
+   			 s = *(environ+i);
+  			}
+  			return;
+		}
+		int x=setenv(c->args[1],c->args[2],1);
+		if(x<0)printf("%d setenv :(",x);
+		printf("%s\n",getenv(c->args[1]));
+		return;
+	}
+	if(strcmp("unsetenv",c->args[0])==0){//unsetenv handler
+		int x=unsetenv(c->args[1]);
+		if(x<0)printf("%d unsetenv :(",x);
+		//printf("%s\n",getenv(c->args[1]));
+		return;
+	}
+
+	int pid=fork();
 	if(pid==0)
 	{
 		int out,in;

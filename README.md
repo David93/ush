@@ -4,6 +4,7 @@
 0.1 Does every operator excpt pipe
 0.2 added cd, pwd, echo and logout
 0.3 streamlined flow
+0.4 added setenv and unsetenv
 
 # Issues
 
@@ -14,6 +15,6 @@
 
 # Todo
 
-1)Do nice, setenv, unsetenv and where
+1)Do nice, and where
 2)Do pipe
 3)Do signal handling
