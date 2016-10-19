@@ -11,6 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "parse.h"
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/resource.h>
+#include <string.h>
 
 static void prCmd(Cmd c)
 {
@@ -55,6 +61,7 @@ static void prCmd(Cmd c)
     // this driver understands one command
     if ( !strcmp(c->args[0], "end") )
       exit(0);
+      
   }
 }
 
@@ -79,10 +86,31 @@ int main(int argc, char *argv[])
 {
   Pipe p;
   char *host = "zirael";
-
+  //rc file handling
+  int stdincopy=dup(0);
+  int in=open(".ushrc",O_RDONLY);
+  //printf("%d\n",in);
+  dup2(in,0);
+  close(in);
   while ( 1 ) {
-    printf("%s%% ", host);
     p = parse();
+    //printf("%s",p->head->args[0]);
+    if(!strcmp(p->head->args[0], "end"))
+      break;
+    run_shell(p);
+    freePipe(p);
+  }
+  dup2(stdincopy,0);
+  close(stdincopy);
+  while ( 1 ) {
+    //fflush( stdout );
+    printf("%s%% ", host);
+    fflush( stdout );
+    p = parse();
+    //if(!strcmp(p->head->args[0], "end"))
+    //  exit(0);
+    if(p==NULL)
+      continue;
     run_shell(p);
     prPipe(p);
     freePipe(p);

@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/resource.h>
 #include <string.h>
 
 #define READ_END 0
@@ -16,12 +17,13 @@ void run_cmd(Cmd c){
 	//printf("%s\n",getenv("PWD"));
 	//Cmd c=p->head;
 	if ( !strcmp(c->args[0], "end") )
-      exit(0);
+    {//printf("Exiting on end\n"); 
+    return;}
  	if(strcmp("cd",c->args[0])==0){//cd has to be done in parent process
 		if(c->args[1]!=NULL){
 			char res_path[200];
 			realpath(c->args[1],res_path);
-			printf("%s\n",res_path);
+			//printf("%s\n",res_path);
 			chdir(res_path);
 		}
 		else
@@ -52,7 +54,26 @@ void run_cmd(Cmd c){
 		//printf("%s\n",getenv(c->args[1]));
 		return;
 	}
-
+	if(strcmp("nice",c->args[0])==0){//nice handler
+		printf("Priority before=%d\n",getpriority(PRIO_PROCESS,getpid()));
+		int val=atoi(c->args[1]);
+		//printf("%d",value);
+		if(c->args[1]=='0')
+			setpriority(PRIO_PROCESS,getpid(),0);
+		else
+		{
+			if(val==0)
+				setpriority(PRIO_PROCESS,getpid(),4);
+			else
+			{
+				printf("hai\n");
+				setpriority(PRIO_PROCESS,getpid(),val);
+			}
+		}
+		printf("Priority after=%d\n",getpriority(PRIO_PROCESS,getpid()));
+		//printf("%s\n",getenv(c->args[1]));
+		return;
+	}
 	int pid=fork();
 	if(pid==0)
 	{
