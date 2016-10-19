@@ -2,7 +2,7 @@
 
 
 0.1 Does every operator excpt pipe
-
+0.2 added cd, pwd, echo and logout
 
 # Issues
 
