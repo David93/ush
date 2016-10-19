@@ -3,13 +3,14 @@
 
 0.1 Does every operator excpt pipe
 0.2 added cd, pwd, echo and logout
+0.3 streamlined flow
 
 # Issues
 
 1)Do .ushrc handling
 2)need to figure out how to print commands
 3)stderror and stdout together
-
+4)Can bash commands be piped?
 
 # Todo
 

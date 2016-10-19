@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   while ( 1 ) {
     printf("%s%% ", host);
     p = parse();
-    run_pipeline(p);
+    run_shell(p);
     prPipe(p);
     freePipe(p);
   }
