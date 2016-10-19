@@ -5,6 +5,7 @@
 0.2 added cd, pwd, echo and logout
 0.3 streamlined flow
 0.4 added setenv and unsetenv
+0.5 added .ushrc handle and simple 
 
 # Issues
 
