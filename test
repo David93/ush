@@ -1,2 +1,2 @@
-cat omh >& out
-cat out
+ls
+ls
