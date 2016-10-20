@@ -9,12 +9,13 @@
 0.6 fixed nice, added hostname 
 0.7 Added pipe, needs more testing
 0.8 Added where, and signals
+0.9 added pipeing for where
 
 # Issues
 
-1)need to figure out how to print commands
+1)need to figure out how output should be formatted 
 2)Nice values cannot be set to 0, nice run on built in commands?
 
 # Todo
 
-Should bash commands be redirected/piped?
+

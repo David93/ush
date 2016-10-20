@@ -117,8 +117,10 @@ int main(int argc, char *argv[])
     printf("%s%% ", hostname);
     fflush( stdout );
     p = parse();
-    //if(!strcmp(p->head->args[0], "end"))
-    //  exit(0);
+    if(p!=NULL)
+    {  if(!strcmp(p->head->args[0], "end"))
+        exit(0);
+    }
     if(p==NULL)
       continue;
     run_shell(p);

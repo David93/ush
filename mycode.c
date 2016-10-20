@@ -72,17 +72,25 @@ void run_cmd(Cmd c){
 	}
 	if(strcmp("setenv",c->args[0])==0){//setenv handler
 		if(c->args[1]==NULL){
+			int pid=fork();
+			if(pid==0){
+			redirect(c);
 			int i = 1;
   			char *s = *environ;
 			for (; s; i++) {
     		printf("%s\n", s);
    			 s = *(environ+i);
   			}
+  			exit(0);
+  			}
+  			else
+  				wait(NULL);
   			return;
+  			
 		}
 		int x=setenv(c->args[1],c->args[2],1);
 		if(x<0)printf("%d setenv :(\n",x);
-		printf("%s\n",getenv(c->args[1]));
+		//printf("%s\n",getenv(c->args[1]));
 		return;
 	}
 	if(strcmp("unsetenv",c->args[0])==0){//unsetenv handler
@@ -126,6 +134,7 @@ void run_cmd(Cmd c){
 
 			for(j=2;j<c->nargs+2;j++)
 				newargs[j]=c->args[j-1];
+			redirect(c);
 			if(execvp("whereis",newargs)<0)
 				printf("oh no :(\n");
 		}
@@ -164,7 +173,19 @@ void create_proc(int in, int out, Cmd c){
           dup2 (out, 1);
           close (out);
         }
-        
+        if(strcmp("where",c->args[0])==0 && in==0){
+			int i=1;
+			char **newargs = malloc((c->nargs+1)*sizeof(char*));
+			newargs[0]=c->args[0];
+			char *k="-b";
+			newargs[1]=k;
+			int j;
+
+			for(j=2;j<c->nargs+2;j++)
+				newargs[j]=c->args[j-1];
+			if(execvp("whereis",newargs)<0)
+				printf("oh no :(\n");
+		}
         if(execvp(c->args[0],c->args)<0)
 		printf("oh no :(\n");
 
