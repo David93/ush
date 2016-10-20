@@ -85,11 +85,21 @@ static void prPipe(Pipe p)
 int main(int argc, char *argv[])
 {
   Pipe p;
-  char *host = "zirael";
+  char *hostname="geralt";
+  //getting hostname
+  char host[1024];
+  host[1023] = '\0';
+  gethostname(host, 1023);
   //rc file handling
   int stdincopy=dup(0);
-  int in=open(".ushrc",O_RDONLY);
+  char rc_file[300];
+  strcat(rc_file,getenv("HOME"));
+  strcat(rc_file,"/");
+  strcat(rc_file,".ushrc");
+  printf("%s\n",rc_file);
+  int in=open(rc_file,O_RDONLY);
   //printf("%d\n",in);
+  if(in>=0){
   dup2(in,0);
   close(in);
   while ( 1 ) {
@@ -102,8 +112,11 @@ int main(int argc, char *argv[])
   }
   dup2(stdincopy,0);
   close(stdincopy);
+  }
+  else
+    printf(".ushrc file not found\n");
   while ( 1 ) {
-    printf("%s%% ", host);
+    printf("%s%% ", hostname);
     fflush( stdout );
     p = parse();
     //if(!strcmp(p->head->args[0], "end"))
