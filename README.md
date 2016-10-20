@@ -13,11 +13,8 @@
 # Issues
 
 1)need to figure out how to print commands
-2)Can bash commands be redirected/piped?
-3)Nice values cannot be set to 0, nice run on built in commands?
-4)Test TpipeErr later
+2)Nice values cannot be set to 0, nice run on built in commands?
 
 # Todo
 
-
-
+Should bash commands be redirected/piped?

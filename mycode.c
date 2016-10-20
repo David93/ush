@@ -24,16 +24,27 @@ void redirect(Cmd c){
 	if(c->in==Tin)
 		{in=open(c->infile,O_RDONLY);dup2(in,0);close(in);}
 }
-void signal_handle(){
+void signal_handle(int parent){
 	sigset_t mask;
   	sigset_t orig_mask;
     sigemptyset (&mask);
     sigaddset (&mask, SIGQUIT);
     sigaddset (&mask, SIGTERM);
-     if (sigprocmask(SIG_BLOCK, &mask, &orig_mask) < 0) {
-    printf("signal handle :(\n");
-
-   }
+    if(parent==1)
+    	sigaddset(&mask, SIGINT);
+    else
+    {
+    	sigset_t mask2;
+  		sigset_t orig_mask2;
+    	sigemptyset (&mask2);
+    	sigaddset(&mask2, SIGINT);
+    	if (sigprocmask(SIG_UNBLOCK, &mask2, &orig_mask2) < 0) {
+	    	printf("signal handle :(\n");
+	    	return;
+  		}
+	}
+    if (sigprocmask(SIG_BLOCK, &mask, &orig_mask) < 0) {
+        printf("signal handle :(\n");   }
 }
 void run_cmd(Cmd c){
 	//if(c==NULL)
@@ -112,6 +123,7 @@ void run_cmd(Cmd c){
 			char *k="-b";
 			newargs[1]=k;
 			int j;
+
 			for(j=2;j<c->nargs+2;j++)
 				newargs[j]=c->args[j-1];
 			if(execvp("whereis",newargs)<0)
@@ -126,6 +138,7 @@ void run_cmd(Cmd c){
 	if(pid==0)
 	{
 		redirect(c);
+		signal_handle(0);
 		if(execvp(c->args[0],c->args)<0)
 			printf("oh no :(\n");
 	}

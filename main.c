@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
   strcat(rc_file,"/");
   strcat(rc_file,".ushrc");
   int in=open(rc_file,O_RDONLY);
-  signal_handle();
+  signal_handle(1);
   if(in>=0){
   dup2(in,0);
   close(in);
