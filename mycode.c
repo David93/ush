@@ -55,24 +55,38 @@ void run_cmd(Cmd c){
 		return;
 	}
 	if(strcmp("nice",c->args[0])==0){//nice handler
-		printf("Priority before=%d\n",getpriority(PRIO_PROCESS,getpid()));
 		int val=atoi(c->args[1]);
-		//printf("%d",value);
-		if(c->args[1]=='0')
-			setpriority(PRIO_PROCESS,getpid(),0);
-		else
+		int pid=fork();
+		if(pid==0)
 		{
-			if(val==0)
-				setpriority(PRIO_PROCESS,getpid(),4);
+			if(c->args[1]=='0')
+				setpriority(PRIO_PROCESS,getpid(),0);
 			else
 			{
-				printf("hai\n");
-				setpriority(PRIO_PROCESS,getpid(),val);
+				if(val==0)
+					setpriority(PRIO_PROCESS,getpid(),4);
+				else
+					setpriority(PRIO_PROCESS,getpid(),val);
 			}
+			int out,in;
+			if(c->out!=Tnil)
+				switch(c->out){
+					case Tout: out=open(c->outfile,O_WRONLY|O_CREAT|O_TRUNC,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);break;
+					case ToutErr: out=open(c->outfile,O_WRONLY|O_CREAT|O_TRUNC,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);dup2(out,2);break;
+					case Tapp: out=open(c->outfile,O_WRONLY|O_CREAT|O_APPEND,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);break;
+					case TappErr: out=open(c->outfile,O_WRONLY|O_CREAT|O_APPEND,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);dup2(out,2);break;
+
+				}
+			if(c->in==Tin)
+				{in=open(c->infile,O_RDONLY);dup2(in,0);}	
+			close(out);
+			close(in);
+			if(execvp(c->args[2],c->args+2)<0)
+				printf("oh no :(\n");
 		}
-		printf("Priority after=%d\n",getpriority(PRIO_PROCESS,getpid()));
-		//printf("%s\n",getenv(c->args[1]));
-		return;
+		else
+			wait(NULL);
+			return;
 	}
 	int pid=fork();
 	if(pid==0)
@@ -84,7 +98,6 @@ void run_cmd(Cmd c){
 				case ToutErr: out=open(c->outfile,O_WRONLY|O_CREAT|O_TRUNC,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);dup2(out,2);break;
 				case Tapp: out=open(c->outfile,O_WRONLY|O_CREAT|O_APPEND,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);break;
 				case TappErr: out=open(c->outfile,O_WRONLY|O_CREAT|O_APPEND,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);dup2(out,2);break;
-
 			}
 		if(c->in==Tin)
 			{in=open(c->infile,O_RDONLY);dup2(in,0);}	

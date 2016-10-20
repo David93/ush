@@ -103,7 +103,6 @@ int main(int argc, char *argv[])
   dup2(stdincopy,0);
   close(stdincopy);
   while ( 1 ) {
-    //fflush( stdout );
     printf("%s%% ", host);
     fflush( stdout );
     p = parse();
@@ -112,7 +111,7 @@ int main(int argc, char *argv[])
     if(p==NULL)
       continue;
     run_shell(p);
-    prPipe(p);
+    //prPipe(p);
     freePipe(p);
   }
 }
