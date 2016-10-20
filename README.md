@@ -8,6 +8,7 @@
 0.5 added .ushrc handle and semi-nice
 0.6 fixed nice, added hostname 
 0.7 Added pipe, needs more testing
+0.8 Added where, and signals
 
 # Issues
 
@@ -18,7 +19,5 @@
 
 # Todo
 
-1)Do where
-2)Do signal handling
 
-grep m < a | grep c
+

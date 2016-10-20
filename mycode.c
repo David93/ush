@@ -7,9 +7,8 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <string.h>
+#include <signal.h>
 
-#define READ_END 0
-#define WRITE_END 1
 extern char **environ;
 void redirect(Cmd c){
 	int out,in;
@@ -24,6 +23,17 @@ void redirect(Cmd c){
 	}
 	if(c->in==Tin)
 		{in=open(c->infile,O_RDONLY);dup2(in,0);close(in);}
+}
+void signal_handle(){
+	sigset_t mask;
+  	sigset_t orig_mask;
+    sigemptyset (&mask);
+    sigaddset (&mask, SIGQUIT);
+    sigaddset (&mask, SIGTERM);
+     if (sigprocmask(SIG_BLOCK, &mask, &orig_mask) < 0) {
+    printf("signal handle :(\n");
+
+   }
 }
 void run_cmd(Cmd c){
 	//if(c==NULL)
@@ -90,10 +100,26 @@ void run_cmd(Cmd c){
 		}
 		else
 			wait(NULL);
-			return;
+		return;
 	}
 	if(strcmp("where",c->args[0])==0){
-		//where handler code		
+		int pid=fork();
+		if(pid==0)
+		{
+			int i=1;
+			char **newargs = malloc((c->nargs+1)*sizeof(char*));
+			newargs[0]=c->args[0];
+			char *k="-b";
+			newargs[1]=k;
+			int j;
+			for(j=2;j<c->nargs+2;j++)
+				newargs[j]=c->args[j-1];
+			if(execvp("whereis",newargs)<0)
+				printf("oh no :(\n");
+		}
+		else
+			wait(NULL);
+		return;	
 	}
 	
 	int pid=fork();

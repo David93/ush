@@ -96,15 +96,13 @@ int main(int argc, char *argv[])
   strcat(rc_file,getenv("HOME"));
   strcat(rc_file,"/");
   strcat(rc_file,".ushrc");
-  printf("%s\n",rc_file);
   int in=open(rc_file,O_RDONLY);
-  //printf("%d\n",in);
+  signal_handle();
   if(in>=0){
   dup2(in,0);
   close(in);
   while ( 1 ) {
     p = parse();
-    //printf("%s",p->head->args[0]);
     if(!strcmp(p->head->args[0], "end"))
       break;
     run_shell(p);
