@@ -173,7 +173,7 @@ void create_proc(int in, int out, Cmd c){
           dup2 (out, 1);
           close (out);
         }
-        if(strcmp("where",c->args[0])==0 && in==0){
+        if(strcmp("where",c->args[0])==0){
 			int i=1;
 			char **newargs = malloc((c->nargs+1)*sizeof(char*));
 			newargs[0]=c->args[0];
@@ -184,6 +184,20 @@ void create_proc(int in, int out, Cmd c){
 			for(j=2;j<c->nargs+2;j++)
 				newargs[j]=c->args[j-1];
 			if(execvp("whereis",newargs)<0)
+				printf("oh no :(\n");
+		}
+		if(strcmp("nice",c->args[0])==0){//nice handler
+		int val=atoi(c->args[1]);
+			if(c->args[1]=='0')
+				setpriority(PRIO_PROCESS,getpid(),0);
+			else
+			{
+				if(val==0)
+					setpriority(PRIO_PROCESS,getpid(),4);
+				else
+					setpriority(PRIO_PROCESS,getpid(),val);
+			}
+			if(execvp(c->args[2],c->args+2)<0)
 				printf("oh no :(\n");
 		}
         if(execvp(c->args[0],c->args)<0)

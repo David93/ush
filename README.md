@@ -10,6 +10,7 @@
 0.7 Added pipe, needs more testing
 0.8 Added where, and signals
 0.9 added pipeing for where, fixed some bugs
+0.95 added nice to pipe
 
 # Issues
 
