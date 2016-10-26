@@ -91,13 +91,13 @@ void run_cmd(Cmd c){
 		int x=setenv(c->args[1],c->args[2],1);
 		if(x<0)fprintf(stderr, "%s\n", strerror(errno));
 		//printf("%s\n",getenv(c->args[1]));
-		return;
+		 return;
 	}
 	if(strcmp("unsetenv",c->args[0])==0){//unsetenv handler
 		int x=unsetenv(c->args[1]);
 		if(x<0)fprintf(stderr, "%s\n", strerror(errno));
-
-		//printf("%s\n",getenv(c->args[1]));
+ 
+		 //printf("%s\n",getenv(c->args[1]));
 		return;
 	}
 	if(strcmp("nice",c->args[0])==0){//nice handler
@@ -220,7 +220,7 @@ void create_proc(int in, int out, Cmd c){
 }
 void run_cmd_pipes(Cmd c){
 	int in,fd[2];
-	in=0;
+	 in=0;
 
 	while(c->next!=NULL){
 		pipe(fd);
@@ -244,7 +244,7 @@ void run_cmd_pipes(Cmd c){
 		signal_handle(0);
 
 		if(execvp(c->args[0],c->args)<0)
-			fprintf(stderr, "%s\n", strerror(errno));
+			 fprintf(stderr, "%s\n", strerror(errno));
 	}
 	else 
 		wait(NULL);

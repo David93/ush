@@ -4,7 +4,7 @@
 # 
 
 CC=gcc
-CFLAGS=-g
+CFLAGS=-g -w
 SRC=main.c parse.c parse.h mycode.c
 OBJ=main.o parse.o mycode.o
 

@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
   else
     fprintf(stderr, ".ushrc: %s\n", strerror(errno));
   while ( 1 ) {
-    printf("%s%% ", hostname);
+    printf("%s%% ", host);
     fflush( stdout );
     p = parse();
     if(p!=NULL)
