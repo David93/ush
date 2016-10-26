@@ -11,11 +11,11 @@
 0.8 Added where, and signals
 0.9 added pipeing for where, fixed some bugs
 0.95 added nice to pipe
+0.99 Added error messages, minor fixes
 
 # Issues
 
-1)How should output be formatted
-2)Nice values cannot be set to 0, nice run on built in commands?
+1)Nice values cannot be set to 0, nice run on built in commands?
 
 # Todo
 

@@ -8,7 +8,7 @@
 #include <sys/resource.h>
 #include <string.h>
 #include <signal.h>
-
+#include <errno.h>
 extern char **environ;
 void redirect(Cmd c){
 	int out,in;
@@ -39,12 +39,12 @@ void signal_handle(int parent){
     	sigemptyset (&mask2);
     	sigaddset(&mask2, SIGINT);
     	if (sigprocmask(SIG_UNBLOCK, &mask2, &orig_mask2) < 0) {
-	    	printf("signal handle :(\n");
+	    	fprintf(stderr, "%s\n", strerror(errno));
 	    	return;
   		}
 	}
     if (sigprocmask(SIG_BLOCK, &mask, &orig_mask) < 0) {
-        printf("signal handle :(\n");   }
+        fprintf(stderr, "%s\n", strerror(errno));  }
 }
 void run_cmd(Cmd c){
 	//if(c==NULL)
@@ -64,7 +64,7 @@ void run_cmd(Cmd c){
 		}
 		else
 			x=chdir(getenv("HOME"));
-		if(x<0)printf("%d cd :(\n",x);
+		if(x<0)fprintf(stderr, "%s\n", strerror(errno));
 		return;
 	}
 	if(strcmp("logout",c->args[0])==0){//exit 
@@ -89,19 +89,22 @@ void run_cmd(Cmd c){
   			
 		}
 		int x=setenv(c->args[1],c->args[2],1);
-		if(x<0)printf("%d setenv :(\n",x);
+		if(x<0)fprintf(stderr, "%s\n", strerror(errno));
 		//printf("%s\n",getenv(c->args[1]));
 		return;
 	}
 	if(strcmp("unsetenv",c->args[0])==0){//unsetenv handler
 		int x=unsetenv(c->args[1]);
-		if(x<0)printf("%d unsetenv :(\n",x);
+		if(x<0)fprintf(stderr, "%s\n", strerror(errno));
+
 		//printf("%s\n",getenv(c->args[1]));
 		return;
 	}
 	if(strcmp("nice",c->args[0])==0){//nice handler
 		int val=atoi(c->args[1]);
 		int pid=fork();
+		if(pid==-1)
+			fprintf(stderr, "%s\n", strerror(errno));
 		if(pid==0)
 		{
 			if(c->args[1]=='0')
@@ -115,7 +118,7 @@ void run_cmd(Cmd c){
 			}
 			redirect(c);
 			if(execvp(c->args[2],c->args+2)<0)
-				printf("oh no :(\n");
+				fprintf(stderr, "%s\n", strerror(errno));
 		}
 		else
 			wait(NULL);
@@ -123,6 +126,8 @@ void run_cmd(Cmd c){
 	}
 	if(strcmp("where",c->args[0])==0){
 		int pid=fork();
+		if(pid==-1)
+			fprintf(stderr, "%s\n", strerror(errno));
 		if(pid==0)
 		{
 			int i=1;
@@ -136,7 +141,7 @@ void run_cmd(Cmd c){
 				newargs[j]=c->args[j-1];
 			redirect(c);
 			if(execvp("whereis",newargs)<0)
-				printf("oh no :(\n");
+				fprintf(stderr, "%s\n", strerror(errno));
 		}
 		else
 			wait(NULL);
@@ -144,19 +149,24 @@ void run_cmd(Cmd c){
 	}
 	
 	int pid=fork();
+	if(pid==-1)
+			fprintf(stderr, "%s\n", strerror(errno));
 	if(pid==0)
 	{
 		redirect(c);
 		signal_handle(0);
 		if(execvp(c->args[0],c->args)<0)
-			printf("oh no :(\n");
+			fprintf(stderr, "%s\n", strerror(errno));
 	}
 	else
 		wait(NULL);
 }
 void create_proc(int in, int out, Cmd c){
 	int pid=fork();
+	if(pid==-1)
+			fprintf(stderr, "%s\n", strerror(errno));
 	if(pid==0){
+		signal_handle(0);
 		if(c->in==Tin)
 			 { int k=open(c->infile,O_RDONLY);dup2(k,0);close(k);}
 		if (in != 0)
@@ -184,7 +194,7 @@ void create_proc(int in, int out, Cmd c){
 			for(j=2;j<c->nargs+2;j++)
 				newargs[j]=c->args[j-1];
 			if(execvp("whereis",newargs)<0)
-				printf("oh no :(\n");
+				fprintf(stderr, "%s\n", strerror(errno));
 		}
 		if(strcmp("nice",c->args[0])==0){//nice handler
 		int val=atoi(c->args[1]);
@@ -198,10 +208,11 @@ void create_proc(int in, int out, Cmd c){
 					setpriority(PRIO_PROCESS,getpid(),val);
 			}
 			if(execvp(c->args[2],c->args+2)<0)
-				printf("oh no :(\n");
+				fprintf(stderr, "%s\n", strerror(errno));
 		}
+		
         if(execvp(c->args[0],c->args)<0)
-		printf("oh no :(\n");
+		fprintf(stderr, "%s\n", strerror(errno));
 
 	}
 	else
@@ -230,8 +241,10 @@ void run_cmd_pipes(Cmd c){
 			case Tapp: out=open(c->outfile,O_WRONLY|O_CREAT|O_APPEND,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);break;
 			case TappErr: out=open(c->outfile,O_WRONLY|O_CREAT|O_APPEND,S_IRUSR|S_IRGRP|S_IWUSR|S_IWGRP);dup2(out,1);dup2(out,2);break;
 		}
+		signal_handle(0);
+
 		if(execvp(c->args[0],c->args)<0)
-			printf("oh no :(\n");
+			fprintf(stderr, "%s\n", strerror(errno));
 	}
 	else 
 		wait(NULL);

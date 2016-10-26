@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <string.h>
+#include <errno.h>
 
 static void prCmd(Cmd c)
 {
@@ -99,20 +100,20 @@ int main(int argc, char *argv[])
   int in=open(rc_file,O_RDONLY);
   signal_handle(1);
   if(in>=0){
-  dup2(in,0);
-  close(in);
-  while ( 1 ) {
-    p = parse();
-    if(!strcmp(p->head->args[0], "end"))
-      break;
-    run_shell(p);
-    freePipe(p);
-  }
-  dup2(stdincopy,0);
-  close(stdincopy);
+      dup2(in,0);
+      close(in);
+      while ( 1 ) {
+        p = parse();
+        if(!strcmp(p->head->args[0], "end"))
+          break;
+        run_shell(p);
+        freePipe(p);
+      }
+      dup2(stdincopy,0);
+      close(stdincopy);
   }
   else
-    printf(".ushrc file not found\n");
+    fprintf(stderr, ".ushrc: %s\n", strerror(errno));
   while ( 1 ) {
     printf("%s%% ", hostname);
     fflush( stdout );
